@@ -1,51 +1,630 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Ярослав | Developer</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ярослав — портфолио</title>
+  <meta name="description" content="Портфолио Ярослава: Telegram-боты, автоматизация, мониторинг, админка, интеграции. Украина. Контакт: @Moonsl1" />
+  <meta name="theme-color" content="#0b0f1a" />
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial;
-            background: #0f172a;
-            color: white;
-            text-align: center;
-        }
+  <style>
+    :root{
+      --bg0:#050711;
+      --bg1:#070a18;
+      --card:rgba(255,255,255,.06);
+      --card2:rgba(255,255,255,.08);
+      --line:rgba(255,255,255,.10);
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.72);
+      --muted2:rgba(234,240,255,.55);
+      --cyan:#59f3ff;
+      --violet:#9b5cff;
+      --pink:#ff4fd8;
+      --green:#54ff8f;
+      --shadow: 0 24px 80px rgba(0,0,0,.45);
+      --shadow2: 0 10px 40px rgba(0,0,0,.35);
+      --radius: 22px;
+      --radius2: 16px;
+      --max: 1120px;
+      --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
 
-        h1 {
-            font-size: 50px;
-            margin-top: 100px;
-        }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 650px at 12% 10%, rgba(155,92,255,.32), transparent 55%),
+        radial-gradient(900px 540px at 65% 0%, rgba(89,243,255,.22), transparent 60%),
+        radial-gradient(1000px 720px at 90% 35%, rgba(255,79,216,.16), transparent 62%),
+        radial-gradient(1200px 900px at 50% 120%, rgba(84,255,143,.08), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
 
-        p {
-            font-size: 20px;
-            opacity: 0.8;
-        }
+    /* subtle grid */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.18;
+      background:
+        linear-gradient(to right, rgba(255,255,255,.08) 1px, transparent 1px) 0 0 / 64px 64px,
+        linear-gradient(to bottom, rgba(255,255,255,.08) 1px, transparent 1px) 0 0 / 64px 64px;
+      mask-image: radial-gradient(800px 520px at 50% 15%, rgba(0,0,0,1), transparent 70%);
+    }
 
-        .btn {
-            margin-top: 30px;
-            display: inline-block;
-            padding: 15px 30px;
-            background: #22c55e;
-            color: black;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: bold;
-        }
+    a{ color:inherit; text-decoration:none; }
+    .wrap{ width:min(var(--max), calc(100% - 32px)); margin:0 auto; }
 
-        .btn:hover {
-            background: #16a34a;
-        }
-    </style>
+    /* top bar */
+    .top{
+      position:sticky; top:0; z-index:30;
+      backdrop-filter: blur(12px);
+      background: linear-gradient(180deg, rgba(5,7,17,.75), rgba(5,7,17,.35));
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .topin{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 0;
+      gap:14px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      min-width:220px;
+    }
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      background: radial-gradient(12px 12px at 30% 30%, rgba(255,255,255,.35), transparent 70%),
+                  linear-gradient(135deg, var(--cyan), var(--violet) 55%, var(--pink));
+      box-shadow: 0 12px 30px rgba(89,243,255,.12);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .brand b{ display:block; font-size:14px; letter-spacing:.2px; }
+    .brand small{ display:block; color:var(--muted2); font-size:12px; margin-top:2px; }
+
+    .nav{
+      display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      padding:9px 12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.05);
+      border-radius:999px;
+      color:var(--muted);
+      font-size:12.5px;
+      transition:.2s ease;
+      user-select:none;
+    }
+    .pill:hover{ background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.16); color:var(--text); }
+
+    .ctaRow{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.07);
+      box-shadow: var(--shadow2);
+      color:var(--text);
+      font-weight:600;
+      letter-spacing:.2px;
+      transition:.2s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); border-color:rgba(255,255,255,.18); background:rgba(255,255,255,.10); }
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(89,243,255,.22), rgba(155,92,255,.22) 55%, rgba(255,79,216,.16));
+      border-color: rgba(89,243,255,.25);
+      box-shadow: 0 20px 55px rgba(89,243,255,.10);
+    }
+    .btn .dot{
+      width:10px; height:10px; border-radius:50%;
+      background: var(--green);
+      box-shadow: 0 0 0 6px rgba(84,255,143,.10);
+    }
+
+    /* hero */
+    .hero{ padding:34px 0 10px; }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.25fr .95fr;
+      gap:18px;
+      align-items:stretch;
+    }
+    @media (max-width: 980px){ .grid{ grid-template-columns:1fr; } .brand{ min-width:auto; } }
+
+    .card{
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(320px 160px at 20% 0%, rgba(89,243,255,.18), transparent 60%),
+        radial-gradient(260px 180px at 80% 10%, rgba(155,92,255,.16), transparent 65%),
+        radial-gradient(280px 220px at 50% 120%, rgba(255,79,216,.12), transparent 70%);
+      pointer-events:none;
+      opacity:.9;
+    }
+    .card > *{ position:relative; z-index:1; }
+    .pad{ padding:22px; }
+
+    .kicker{
+      display:inline-flex; align-items:center; gap:10px;
+      color:var(--muted);
+      font-size:12.5px;
+      padding:7px 10px;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      margin-bottom:14px;
+    }
+    .kicker code{
+      font-family:var(--mono);
+      font-size:12px;
+      color: rgba(234,240,255,.85);
+    }
+
+    h1{
+      margin:0 0 10px;
+      font-size:42px;
+      line-height:1.05;
+      letter-spacing:-.8px;
+    }
+    @media (max-width:560px){ h1{ font-size:34px; } }
+    .lead{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size:15.5px;
+      line-height:1.6;
+      max-width:62ch;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+      margin-top:16px;
+    }
+    @media (max-width:560px){ .stats{ grid-template-columns:1fr; } }
+
+    .stat{
+      padding:14px 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      border-radius: var(--radius2);
+    }
+    .stat b{ display:block; font-size:14px; margin-bottom:4px; }
+    .stat span{ color:var(--muted2); font-size:12.5px; line-height:1.4; display:block; }
+
+    /* side card */
+    .sideTitle{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom:12px;
+    }
+    .sideTitle h2{ margin:0; font-size:16px; letter-spacing:.2px; }
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+      font-size:12px;
+      user-select:none;
+    }
+    .chip .pulse{
+      width:8px; height:8px; border-radius:50%;
+      background:var(--cyan);
+      box-shadow: 0 0 0 6px rgba(89,243,255,.10);
+    }
+
+    .about{
+      color:var(--muted);
+      line-height:1.65;
+      font-size:14.5px;
+      margin:10px 0 14px;
+    }
+
+    .stack{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width:560px){ .stack{ grid-template-columns:1fr; } }
+
+    .tile{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.05);
+      border-radius:18px;
+      padding:14px;
+    }
+    .tile h3{ margin:0 0 8px; font-size:13px; }
+    .tile p{ margin:0; color:var(--muted2); font-size:12.5px; line-height:1.5; }
+
+    .tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+    .tag{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color: rgba(234,240,255,.78);
+      font-size:12px;
+      user-select:none;
+    }
+
+    /* sections */
+    .section{ padding:18px 0 0; }
+    .sectionHead{
+      display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
+      padding:12px 2px 10px;
+    }
+    .sectionHead h2{ margin:0; font-size:18px; letter-spacing:.2px; }
+    .sectionHead p{ margin:0; color:var(--muted2); font-size:12.8px; }
+
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+    }
+    @media (max-width:980px){ .cards{ grid-template-columns:1fr; } }
+
+    .mini{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      border-radius: 20px;
+      padding:16px;
+      min-height: 120px;
+    }
+    .mini h3{ margin:0 0 8px; font-size:14px; }
+    .mini p{ margin:0; color:var(--muted2); font-size:12.8px; line-height:1.55; }
+
+    .list{
+      margin:0; padding-left:16px;
+      color:var(--muted2);
+      font-size:13px;
+      line-height:1.65;
+    }
+    .list li{ margin:6px 0; }
+
+    /* projects */
+    .projects{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:12px;
+    }
+    @media (max-width:980px){ .projects{ grid-template-columns:1fr; } }
+    .project{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      border-radius: 20px;
+      padding:16px;
+    }
+    .projectTop{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      margin-bottom:8px;
+    }
+    .project h3{ margin:0; font-size:14px; }
+    .badge{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color: rgba(234,240,255,.78);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .project p{ margin:0; color:var(--muted2); font-size:12.8px; line-height:1.55; }
+    .project .meta{ margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
+
+    /* footer */
+    footer{
+      padding:26px 0 40px;
+      color:var(--muted2);
+      font-size:12.5px;
+      text-align:center;
+    }
+    .sep{
+      height:1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+      margin:22px 0 0;
+    }
+
+    /* small helpers */
+    .mono{ font-family: var(--mono); }
+    .muted{ color:var(--muted2); }
+  </style>
 </head>
 
 <body>
+  <header class="top">
+    <div class="wrap topin">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <b>Ярослав</b>
+          <small>Telegram-боты • Автоматизация • Мониторинг</small>
+        </div>
+      </div>
 
-    <h1>Ярослав</h1>
-    <p>Разработчик Telegram-ботов и цифровых решений</p>
+      <nav class="nav" aria-label="Навигация">
+        <a class="pill" href="#about">Обо мне</a>
+        <a class="pill" href="#skills">Навыки</a>
+        <a class="pill" href="#what">Что делаю</a>
+        <a class="pill" href="#projects">Проекты</a>
+        <a class="pill" href="#work">Как работаю</a>
+        <a class="pill" href="#contact">Контакты</a>
+      </nav>
 
-    <a class="btn" href="#">Связаться со мной</a>
+      <div class="ctaRow">
+        <a class="btn primary" href="https://t.me/Moonsl1" target="_blank" rel="noopener">
+          <span class="dot" aria-hidden="true"></span>
+          Связаться в Telegram
+        </a>
+      </div>
+    </div>
+  </header>
 
+  <main class="wrap">
+    <section class="hero" id="top">
+      <div class="grid">
+        <!-- LEFT: HERO -->
+        <div class="card">
+          <div class="pad">
+            <div class="kicker">
+              <span>Украина</span>
+              <span class="muted">•</span>
+              <code>@Moonsl1</code>
+              <span class="muted">•</span>
+              <span class="mono">боты без спама</span>
+            </div>
+
+            <h1>Делаю ботов и системы, которые реально помогают.</h1>
+            <p class="lead">
+              Пишу Telegram-ботов под задачи бизнеса и команд: меню/кнопки, роли, админка, хранение данных,
+              логирование, антидубли, мониторинг источников, сводки и умные фильтры.
+              Люблю порядок в интерфейсе и понятную логику — чтобы работало стабильно 24/7.
+            </p>
+
+            <div class="ctaRow">
+              <a class="btn primary" href="https://t.me/Moonsl1" target="_blank" rel="noopener">💬 Написать мне</a>
+              <a class="btn" href="#projects">🧩 Посмотреть проекты</a>
+            </div>
+
+            <div class="stats">
+              <div class="stat">
+                <b>Быстро</b>
+                <span>Сначала прототип за 1–2 дня, потом доводим до “боевого” состояния.</span>
+              </div>
+              <div class="stat">
+                <b>Умно</b>
+                <span>Фильтры, дедуп, агрегация, логика без хаоса — всё по полочкам.</span>
+              </div>
+              <div class="stat">
+                <b>Практично</b>
+                <span>Сохранение данных, отчёты, стабильность и удобство для людей.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: ABOUT + SKILLS -->
+        <aside class="card" id="about">
+          <div class="pad">
+            <div class="sideTitle">
+              <h2>Обо мне</h2>
+              <span class="chip"><span class="pulse" aria-hidden="true"></span>open for projects</span>
+            </div>
+
+            <p class="about">
+              Меня зовут <b>Ярослав</b>. Я из Украины. Делаю цифровые решения под конкретные задачи:
+              от простого Telegram-бота до системы с мониторингом, сводками, фильтрами и хранением статистики.
+              Если нужно — упакую всё так, чтобы клиенту было удобно и “не страшно”.
+            </p>
+
+            <div class="stack" id="skills">
+              <div class="tile">
+                <h3>Telegram-боты (Python)</h3>
+                <p>Telethon / Bot API, кнопки, меню, роли, группы/каналы, обработка команд.</p>
+                <div class="tags">
+                  <span class="tag">Python</span>
+                  <span class="tag">Telethon</span>
+                  <span class="tag">Bot API</span>
+                </div>
+              </div>
+
+              <div class="tile">
+                <h3>Мониторинг и фильтры</h3>
+                <p>Ключевые слова, гео-фильтры, дедуп, агрегация, “умные” сводки без спама.</p>
+                <div class="tags">
+                  <span class="tag">Regex</span>
+                  <span class="tag">Dedup</span>
+                  <span class="tag">Aggregation</span>
+                </div>
+              </div>
+
+              <div class="tile">
+                <h3>Автоматизация</h3>
+                <p>Запуск по событиям, уведомления, отчёты, регулярные задачи, интеграции.</p>
+                <div class="tags">
+                  <span class="tag">Asyncio</span>
+                  <span class="tag">Webhooks</span>
+                  <span class="tag">Jobs</span>
+                </div>
+              </div>
+
+              <div class="tile">
+                <h3>Хранение/логирование</h3>
+                <p>Сохранение статистики, логи, история, экспорт/отчёты (под задачу).</p>
+                <div class="tags">
+                  <span class="tag">Storage</span>
+                  <span class="tag">Logs</span>
+                  <span class="tag">Reports</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="sep"></div>
+
+            <div class="tags" style="margin-top:14px">
+              <span class="tag">Аккуратный интерфейс</span>
+              <span class="tag">Чистая логика</span>
+              <span class="tag">Без спама</span>
+              <span class="tag">Стабильность</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="what">
+      <div class="sectionHead">
+        <h2>Что я могу сделать</h2>
+        <p>Если коротко: автоматизирую рутину и превращаю хаос в систему.</p>
+      </div>
+
+      <div class="cards">
+        <div class="mini">
+          <h3>🤖 Боты под бизнес</h3>
+          <ul class="list">
+            <li>заявки / заказы / статусы</li>
+            <li>поддержка: FAQ + оператор</li>
+            <li>запись/бронь + напоминания</li>
+            <li>уведомления для команды</li>
+          </ul>
+        </div>
+
+        <div class="mini">
+          <h3>📡 Мониторинг и оповещения</h3>
+          <ul class="list">
+            <li>мониторинг каналов/чатов</li>
+            <li>фильтры, дедуп, “умные” триггеры</li>
+            <li>сводки каждые N минут</li>
+            <li>поиск упоминаний в обсуждениях</li>
+          </ul>
+        </div>
+
+        <div class="mini">
+          <h3>📊 База данных и админка</h3>
+          <ul class="list">
+            <li>пользователи / роли / права</li>
+            <li>статистика, логи, отчёты</li>
+            <li>контент-менеджмент</li>
+            <li>настройки “без кода”</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="projects">
+      <div class="sectionHead">
+        <h2>Проекты</h2>
+        <p>Можно добавить ещё 2–5 кейсов — будет ещё сильнее.</p>
+      </div>
+
+      <div class="projects">
+        <div class="project">
+          <div class="projectTop">
+            <h3>🛡 Система мониторинга источников</h3>
+            <span class="badge">Мониторинг</span>
+          </div>
+          <p>
+            Сбор сообщений из Telegram-каналов/чатов, фильтрация по ключевым словам и гео, антидубль,
+            агрегация в сводки, “киношный” поиск упоминаний локаций в обсуждениях.
+          </p>
+          <div class="meta">
+            <span class="tag">Telethon</span>
+            <span class="tag">Anti-spam</span>
+            <span class="tag">Dedup TTL</span>
+            <span class="tag">Сводки</span>
+          </div>
+        </div>
+
+        <div class="project">
+          <div class="projectTop">
+            <h3>⚙️ Боты под задачи</h3>
+            <span class="badge">Автоматизация</span>
+          </div>
+          <p>
+            Делаю ботов “под ключ”: сценарии, кнопки, роли, хранение данных, уведомления, отчёты.
+            Упаковываю так, чтобы пользователю было просто и понятно.
+          </p>
+          <div class="meta">
+            <span class="tag">UX</span>
+            <span class="tag">Roles</span>
+            <span class="tag">Logs</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="work">
+      <div class="sectionHead">
+        <h2>Как я работаю</h2>
+        <p>Без “магии”: всё прозрачно, по шагам.</p>
+      </div>
+
+      <div class="cards">
+        <div class="mini">
+          <h3>1) Быстрый прототип</h3>
+          <p>Сначала делаю минимально рабочую версию, чтобы ты увидел, что оно “живое”.</p>
+        </div>
+        <div class="mini">
+          <h3>2) Доводка до продакшна</h3>
+          <p>Добавляю защиту от спама, логику, хранение данных, админку, стабильность.</p>
+        </div>
+        <div class="mini">
+          <h3>3) Поддержка и улучшения</h3>
+          <p>Фиксы, расширения, новые фичи. Можно вести проект “по подписке”.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="sectionHead">
+        <h2>Контакты</h2>
+        <p>Самый быстрый вариант — Telegram.</p>
+      </div>
+
+      <div class="card">
+        <div class="pad">
+          <div class="ctaRow">
+            <a class="btn primary" href="https://t.me/Moonsl1" target="_blank" rel="noopener">🚀 Telegram: @Moonsl1</a>
+            <a class="btn" href="#top">⬆️ Наверх</a>
+          </div>
+
+          <div class="sep"></div>
+
+          <p class="muted" style="margin:14px 0 0; line-height:1.7">
+            Напиши в TG, что тебе нужно: <span class="mono">“бот для заявок”</span> /
+            <span class="mono">“мониторинг каналов”</span> / <span class="mono">“бот с админкой”</span>.
+            Я отвечу и предложу вариант решения.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="sep"></div>
+      <div style="margin-top:14px">
+        <span id="y"></span> • Ярослав • GitHub Pages
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    document.getElementById("y").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
