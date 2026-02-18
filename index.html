@@ -1,249 +1,51 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Ярослав — портфолио</title>
-  <meta name="description" content="Личное портфолио Ярослава — разработчик Telegram-ботов и цифровых решений." />
-  <style>
-    :root{
-      --bg:#0b0f19;
-      --card:#101827;
-      --text:#e6eefc;
-      --muted:#9fb0cf;
-      --accent:#7c5cff;
-      --accent2:#00d4ff;
-      --line:rgba(255,255,255,.08);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial,sans-serif;
-      background:
-        radial-gradient(1000px 500px at 15% 10%, rgba(124,92,255,.25), transparent 60%),
-        radial-gradient(900px 500px at 85% 20%, rgba(0,212,255,.18), transparent 55%),
-        radial-gradient(700px 420px at 50% 95%, rgba(124,92,255,.14), transparent 60%),
-        var(--bg);
-      color:var(--text);
-      min-height:100vh;
-    }
-    a{color:inherit;text-decoration:none}
-    .wrap{max-width:980px;margin:0 auto;padding:28px 18px 60px}
-    header{
-      display:flex;align-items:center;justify-content:space-between;gap:14px;
-      padding:14px 0 22px;border-bottom:1px solid var(--line);
-    }
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{
-      width:40px;height:40px;border-radius:14px;
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
-      box-shadow:0 12px 40px rgba(124,92,255,.25);
-    }
-    .brand h1{font-size:16px;margin:0}
-    .brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
-    nav{display:flex;gap:10px;flex-wrap:wrap}
-    .pill{
-      padding:10px 12px;border:1px solid var(--line);
-      border-radius:999px;background:rgba(255,255,255,.03);
-      font-size:13px;color:var(--muted);
-      transition:.2s transform,.2s background,.2s border;
-    }
-    .pill:hover{transform:translateY(-1px);background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:var(--text)}
-    .hero{
-      padding:34px 0 18px;
-      display:grid;grid-template-columns:1.3fr .7fr;gap:16px;
-    }
-    @media (max-width:820px){.hero{grid-template-columns:1fr}}
-    .card{
-      border:1px solid var(--line);
-      background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
-      border-radius:22px;
-      padding:20px;
-      box-shadow:0 14px 50px rgba(0,0,0,.25);
-    }
-    .title{font-size:34px;line-height:1.05;margin:0 0 10px}
-    .subtitle{margin:0;color:var(--muted);font-size:15px;line-height:1.6}
-    .cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-    .btn{
-      padding:12px 14px;border-radius:14px;border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      font-size:14px;color:var(--text);
-      transition:.2s transform,.2s background,.2s border;
-      display:inline-flex;align-items:center;gap:8px;
-    }
-    .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.16)}
-    .btn.primary{
-      background:linear-gradient(135deg,rgba(124,92,255,.85),rgba(0,212,255,.55));
-      border-color:transparent;
-    }
-    .grid{
-      margin-top:16px;
-      display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
-    }
-    @media (max-width:900px){.grid{grid-template-columns:1fr}}
-    .mini{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      border-radius:18px;
-      padding:16px;
-    }
-    .mini h3{margin:0 0 8px;font-size:14px}
-    .mini p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
-    .section{margin-top:16px}
-    .section h2{margin:0 0 10px;font-size:16px}
-    .list{display:grid;gap:10px}
-    .item{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      border-radius:18px;
-      padding:14px 16px;
-      display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
-    }
-    .item b{display:block;font-size:14px;margin-bottom:4px}
-    .item span{color:var(--muted);font-size:13px;line-height:1.5}
-    .tag{
-      font-size:12px;color:var(--muted);
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.2);
-      padding:8px 10px;border-radius:999px;white-space:nowrap;
-    }
-    footer{
-      margin-top:26px;padding-top:16px;border-top:1px solid var(--line);
-      color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
-    }
-    .dot{opacity:.7}
-  </style>
+    <meta charset="UTF-8">
+    <title>Ярослав | Developer</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 50px;
+            margin-top: 100px;
+        }
+
+        p {
+            font-size: 20px;
+            opacity: 0.8;
+        }
+
+        .btn {
+            margin-top: 30px;
+            display: inline-block;
+            padding: 15px 30px;
+            background: #22c55e;
+            color: black;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #16a34a;
+        }
+    </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <h1>Ярослав</h1>
-          <p>Разработчик • Telegram-боты • Автоматизация</p>
-        </div>
-      </div>
-      <nav>
-        <a class="pill" href="#about">Обо мне</a>
-        <a class="pill" href="#skills">Навыки</a>
-        <a class="pill" href="#projects">Проекты</a>
-        <a class="pill" href="#contact">Контакты</a>
-      </nav>
-    </header>
 
-    <div class="hero">
-      <div class="card">
-        <h2 class="title">Делаю ботов и системы,<br/>которые реально помогают</h2>
-        <p class="subtitle">
-          Пишу Telegram-ботов, интеграции, парсинг/мониторинг, админ-панели, хранение статистики.
-          Люблю порядок в интерфейсе и понятные сценарии для людей.
-        </p>
-        <div class="cta">
-          <a class="btn primary" href="#contact">✉️ Связаться</a>
-          <a class="btn" href="#projects">🧩 Посмотреть проекты</a>
-        </div>
+    <h1>Ярослав</h1>
+    <p>Разработчик Telegram-ботов и цифровых решений</p>
 
-        <div class="grid">
-          <div class="mini">
-            <h3>⚡ Быстро</h3>
-            <p>Делаю прототипы за день-два и сразу показываю результат.</p>
-          </div>
-          <div class="mini">
-            <h3>🧠 Умно</h3>
-            <p>Фильтры, дедуп, логика, агрегация — без спама и хаоса.</p>
-          </div>
-          <div class="mini">
-            <h3>🧰 Практично</h3>
-            <p>Сохранение данных, админка, отчёты, чистый код.</p>
-          </div>
-        </div>
-      </div>
+    <a class="btn" href="#">Связаться со мной</a>
 
-      <div class="card" id="about">
-        <h2 class="title" style="font-size:18px;margin-bottom:10px">Обо мне</h2>
-        <p class="subtitle">
-          Меня зовут <b>Ярослав</b>. Я из Украины. Делаю цифровые решения под задачу:
-          от простого бота до сложного мониторинга с логами и безопасными сводками.
-        </p>
-        <div class="section" id="skills">
-          <h2>Навыки</h2>
-          <div class="list">
-            <div class="item">
-              <div>
-                <b>Telegram боты</b>
-                <span>Telethon / Bot API, кнопки, меню, сценарии, группы/каналы</span>
-              </div>
-              <div class="tag">Python</div>
-            </div>
-            <div class="item">
-              <div>
-                <b>Мониторинг и фильтры</b>
-                <span>ключевые слова, гео-фильтры, антидубль, агрегация</span>
-              </div>
-              <div class="tag">Regex</div>
-            </div>
-            <div class="item">
-              <div>
-                <b>Автоматизация</b>
-                <span>запуск по событиям, отчёты, сохранение статистики</span>
-              </div>
-              <div class="tag">Async</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section" id="projects">
-      <h2>Проекты</h2>
-      <div class="list">
-        <div class="item">
-          <div>
-            <b>Viking Monitoring</b>
-            <span>Система мониторинга Telegram-источников: фильтрация, сводки, поиск упоминаний локаций.</span>
-          </div>
-          <div class="tag">Monitoring</div>
-        </div>
-        <div class="item">
-          <div>
-            <b>Telegram-боты под бизнес</b>
-            <span>Боты для заявок, согласований, рассылок, статистики, админ-панелей.</span>
-          </div>
-          <div class="tag">Bots</div>
-        </div>
-        <div class="item">
-          <div>
-            <b>Интеграции</b>
-            <span>Связка ботов с таблицами/логами/хранилищем (по задаче клиента).</span>
-          </div>
-          <div class="tag">Tools</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section" id="contact">
-      <h2>Контакты</h2>
-      <div class="card">
-        <p class="subtitle" style="margin:0">
-          Вставь сюда свои ссылки (Telegram / Instagram / Email).
-        </p>
-        <div class="cta" style="margin-top:14px">
-          <a class="btn" href="#" onclick="alert('Поставь ссылку на свой Telegram сюда 🙂');return false;">Telegram</a>
-          <a class="btn" href="#" onclick="alert('Поставь ссылку на Instagram сюда 🙂');return false;">Instagram</a>
-          <a class="btn" href="#" onclick="alert('Поставь mailto: сюда 🙂');return false;">Email</a>
-        </div>
-      </div>
-    </div>
-
-    <footer>
-      <div>© <span id="y"></span> Ярослав <span class="dot">•</span> Portfolio</div>
-      <div>Сделано на GitHub Pages</div>
-    </footer>
-  </div>
-
-  <script>
-    document.getElementById("y").textContent = new Date().getFullYear();
-  </script>
 </body>
 </html>
