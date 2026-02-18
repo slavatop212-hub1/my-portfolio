@@ -3,421 +3,868 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Yaroslav — Telegram Bots & Automation</title>
-  <meta name="description" content="Telegram-боты, автоматизация, мониторинг. Telethon + Bot API. Украина." />
+  <title>Ярослав — Telegram-боты и автоматизация</title>
+  <meta name="description" content="Ярослав (Украина). Telegram-боты, мониторинг, фильтры, антидубли, логирование, хранение данных. Контакт: @Moonsl1" />
+  <meta name="theme-color" content="#0b0f1a" />
 
   <style>
     :root{
-      --bg:#05060a;
-      --bg2:#070a12;
+      --bg0:#050711;
+      --bg1:#070a18;
       --card:rgba(255,255,255,.06);
-      --stroke:rgba(255,255,255,.10);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.65);
-      --muted2:rgba(255,255,255,.48);
-      --a:#7c5cff;
-      --b:#00e5ff;
-      --c:#00ff85;
-      --shadow: 0 18px 60px rgba(0,0,0,.55);
-      --radius: 18px;
-      --radius2: 26px;
+      --card2:rgba(255,255,255,.085);
+      --line:rgba(255,255,255,.12);
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.74);
+      --muted2:rgba(234,240,255,.56);
+
+      --cyan:#59f3ff;
+      --violet:#9b5cff;
+      --pink:#ff4fd8;
+      --green:#54ff8f;
+
+      --shadow: 0 24px 90px rgba(0,0,0,.52);
+      --shadow2: 0 10px 44px rgba(0,0,0,.36);
+
+      --radius: 22px;
+      --radius2: 16px;
+      --max: 1120px;
+
+      --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    html{ scroll-behavior:smooth; }
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      font-family:var(--font);
       color:var(--text);
       background:
-        radial-gradient(900px 600px at 20% 10%, rgba(124,92,255,.18), transparent 60%),
-        radial-gradient(800px 520px at 80% 20%, rgba(0,229,255,.14), transparent 60%),
-        radial-gradient(900px 700px at 55% 95%, rgba(0,255,133,.10), transparent 60%),
-        linear-gradient(180deg, var(--bg), var(--bg2));
+        radial-gradient(1200px 650px at 12% 10%, rgba(155,92,255,.34), transparent 55%),
+        radial-gradient(900px 540px at 65% 0%, rgba(89,243,255,.22), transparent 60%),
+        radial-gradient(1000px 720px at 90% 35%, rgba(255,79,216,.16), transparent 62%),
+        radial-gradient(1200px 900px at 50% 120%, rgba(84,255,143,.09), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
       overflow-x:hidden;
+      text-rendering:optimizeLegibility;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* мягкая “живая” подложка (двигается очень незаметно) */
+    body::after{
+      content:"";
+      position:fixed;
+      inset:-25%;
+      pointer-events:none;
+      opacity:.18;
+      background:
+        radial-gradient(420px 340px at 25% 22%, rgba(89,243,255,.22), transparent 70%),
+        radial-gradient(520px 380px at 70% 18%, rgba(155,92,255,.22), transparent 74%),
+        radial-gradient(520px 420px at 62% 72%, rgba(255,79,216,.16), transparent 75%),
+        radial-gradient(520px 420px at 34% 78%, rgba(84,255,143,.10), transparent 75%);
+      filter: blur(18px);
+      transform: translate3d(0,0,0);
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+    @keyframes drift{
+      0%{ transform: translate3d(-1.4%, -0.6%, 0) scale(1.02); }
+      100%{ transform: translate3d(1.2%, 0.9%, 0) scale(1.04); }
     }
 
     /* subtle grid */
-    .grid{
-      position:fixed; inset:0; pointer-events:none; opacity:.18;
-      background-image:
-        linear-gradient(to right, rgba(255,255,255,.06) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,.06) 1px, transparent 1px);
-      background-size: 44px 44px;
-      mask-image: radial-gradient(60% 50% at 50% 20%, #000 60%, transparent 100%);
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.16;
+      background:
+        linear-gradient(to right, rgba(255,255,255,.085) 1px, transparent 1px) 0 0 / 64px 64px,
+        linear-gradient(to bottom, rgba(255,255,255,.085) 1px, transparent 1px) 0 0 / 64px 64px;
+      mask-image: radial-gradient(880px 560px at 50% 18%, rgba(0,0,0,1), transparent 70%);
     }
 
-    a{color:inherit; text-decoration:none}
-    .wrap{max-width:1100px; margin:0 auto; padding:28px 18px 80px}
+    a{ color:inherit; text-decoration:none; }
+    .wrap{ width:min(var(--max), calc(100% - 32px)); margin:0 auto; position:relative; z-index:2; }
+
+    /* top bar */
+    .top{
+      position:sticky; top:0; z-index:30;
+      backdrop-filter: blur(12px);
+      background: linear-gradient(180deg, rgba(5,7,17,.76), rgba(5,7,17,.35));
+      border-bottom:1px solid rgba(255,255,255,.085);
+    }
+    .topin{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 0;
+      gap:14px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      min-width:240px;
+    }
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      background:
+        radial-gradient(12px 12px at 30% 30%, rgba(255,255,255,.36), transparent 70%),
+        linear-gradient(135deg, var(--cyan), var(--violet) 55%, var(--pink));
+      box-shadow: 0 12px 30px rgba(89,243,255,.12);
+      border:1px solid rgba(255,255,255,.12);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo::after{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+      transform: rotate(22deg) translateX(-40%);
+      animation: shine 4.6s ease-in-out infinite;
+      opacity:.45;
+    }
+    @keyframes shine{
+      0%,45%{ transform: rotate(22deg) translateX(-45%); }
+      70%{ transform: rotate(22deg) translateX(25%); }
+      100%{ transform: rotate(22deg) translateX(45%); }
+    }
+
+    .brand b{ display:block; font-size:14px; letter-spacing:.2px; }
+    .brand small{ display:block; color:var(--muted2); font-size:12px; margin-top:2px; }
+
     .nav{
-      display:flex; align-items:center; justify-content:space-between; gap:16px;
-      padding:14px 16px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.03);
+      display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      padding:9px 12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.05);
       border-radius:999px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
-      position:sticky; top:14px; z-index:10;
-    }
-    .brand{display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.3px}
-    .dot{
-      width:10px; height:10px; border-radius:50%;
-      background:linear-gradient(90deg,var(--a),var(--b),var(--c));
-      box-shadow: 0 0 18px rgba(0,229,255,.35);
-    }
-    .navlinks{display:flex; gap:14px; flex-wrap:wrap; justify-content:flex-end}
-    .navlinks a{
       color:var(--muted);
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid transparent;
+      font-size:12.5px;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+      user-select:none;
+      will-change: transform;
     }
-    .navlinks a:hover{
+    .pill:hover{
+      transform: translateY(-1px);
+      background:rgba(255,255,255,.08);
+      border-color:rgba(255,255,255,.16);
       color:var(--text);
-      border-color:rgba(255,255,255,.12);
-      background:rgba(255,255,255,.03);
     }
 
-    .hero{
-      margin-top:26px;
+    .ctaRow{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.07);
+      box-shadow: var(--shadow2);
+      color:var(--text);
+      font-weight:600;
+      letter-spacing:.2px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+      will-change: transform;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color:rgba(255,255,255,.18);
+      background:rgba(255,255,255,.10);
+      box-shadow: 0 18px 60px rgba(0,0,0,.42);
+    }
+    .btn:active{ transform: translateY(0px) scale(.99); }
+
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(89,243,255,.22), rgba(155,92,255,.22) 55%, rgba(255,79,216,.16));
+      border-color: rgba(89,243,255,.25);
+      box-shadow: 0 20px 55px rgba(89,243,255,.10);
+      position:relative;
+      overflow:hidden;
+    }
+    .btn.primary::after{
+      content:"";
+      position:absolute;
+      inset:-60% -20%;
+      background: radial-gradient(closest-side, rgba(255,255,255,.22), transparent 70%);
+      transform: translateX(-20%);
+      opacity:.18;
+      transition: opacity .2s ease;
+    }
+    .btn.primary:hover::after{ opacity:.26; }
+
+    .btn .dot{
+      width:10px; height:10px; border-radius:50%;
+      background: var(--green);
+      box-shadow: 0 0 0 6px rgba(84,255,143,.10);
+    }
+
+    /* hero */
+    .hero{ padding:34px 0 10px; }
+    .grid{
       display:grid;
-      grid-template-columns: 1.35fr .65fr;
+      grid-template-columns: 1.25fr .95fr;
       gap:18px;
       align-items:stretch;
     }
-    @media (max-width: 900px){ .hero{grid-template-columns:1fr} }
+    @media (max-width: 980px){
+      .grid{ grid-template-columns:1fr; }
+      .brand{ min-width:auto; }
+    }
 
     .card{
-      border:1px solid var(--stroke);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border-radius: var(--radius2);
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow:hidden;
       position:relative;
+      transform: translateZ(0);
     }
     .card::before{
       content:"";
-      position:absolute; inset:-2px;
-      background: radial-gradient(600px 200px at 20% 0%, rgba(124,92,255,.18), transparent 60%),
-                  radial-gradient(520px 220px at 70% 10%, rgba(0,229,255,.14), transparent 60%);
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(320px 160px at 20% 0%, rgba(89,243,255,.18), transparent 60%),
+        radial-gradient(260px 180px at 80% 10%, rgba(155,92,255,.16), transparent 65%),
+        radial-gradient(280px 220px at 50% 120%, rgba(255,79,216,.12), transparent 70%);
       pointer-events:none;
       opacity:.9;
     }
-    .inner{position:relative; padding:22px 22px}
+    .card > *{ position:relative; z-index:1; }
+    .pad{ padding:22px; }
+
     .kicker{
       display:inline-flex; align-items:center; gap:10px;
-      font-size:12px; letter-spacing:.22em; text-transform:uppercase;
       color:var(--muted);
+      font-size:12.5px;
+      padding:7px 10px;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      margin-bottom:14px;
+    }
+    .kicker code{
+      font-family:var(--mono);
+      font-size:12px;
+      color: rgba(234,240,255,.86);
+    }
+
+    h1{
+      margin:0 0 10px;
+      font-size:42px;
+      line-height:1.05;
+      letter-spacing:-.8px;
+    }
+    @media (max-width:560px){ h1{ font-size:34px; } }
+
+    .lead{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size:15.6px;
+      line-height:1.62;
+      max-width:64ch;
+    }
+
+    .tinyNote{
+      margin-top:10px;
+      color:rgba(234,240,255,.50);
+      font-size:12.6px;
+      line-height:1.5;
+    }
+    .tinyNote b{ color:rgba(234,240,255,.72); font-weight:600; }
+
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+      margin-top:16px;
+    }
+    @media (max-width:560px){ .stats{ grid-template-columns:1fr; } }
+
+    .stat{
+      padding:14px 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      border-radius: var(--radius2);
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .stat:hover{
+      transform: translateY(-2px);
+      background: rgba(255,255,255,.065);
+      border-color: rgba(255,255,255,.14);
+    }
+    .stat b{ display:block; font-size:14px; margin-bottom:4px; }
+    .stat span{ color:var(--muted2); font-size:12.6px; line-height:1.42; display:block; }
+
+    /* side card */
+    .sideTitle{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
       margin-bottom:12px;
     }
-    .pill{
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.04);
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      color:var(--muted);
+    .sideTitle h2{ margin:0; font-size:16px; letter-spacing:.2px; }
+    .chip{
       display:inline-flex; align-items:center; gap:8px;
-    }
-    .h1{
-      font-size:44px; line-height:1.05; margin:0 0 12px;
-      letter-spacing:-.02em;
-    }
-    @media (max-width: 520px){ .h1{font-size:34px} }
-    .lead{margin:0 0 18px; color:var(--muted); font-size:16px; line-height:1.6}
-    .badges{display:flex; gap:10px; flex-wrap:wrap; margin:14px 0 0}
-    .btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
-
-    .btn{
-      display:inline-flex; align-items:center; gap:10px;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      transition:.15s ease;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+      font-size:12px;
       user-select:none;
     }
-    .btn:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.22); background:rgba(255,255,255,.06)}
-    .btn.primary{
-      border-color: rgba(0,229,255,.35);
-      background: linear-gradient(90deg, rgba(124,92,255,.20), rgba(0,229,255,.16));
-      box-shadow: 0 0 0 1px rgba(0,229,255,.10), 0 18px 60px rgba(0,0,0,.45);
+    .chip .pulse{
+      width:8px; height:8px; border-radius:50%;
+      background:var(--cyan);
+      box-shadow: 0 0 0 6px rgba(89,243,255,.10);
+      animation: pulse 2.2s ease-in-out infinite;
     }
-    .icon{
-      width:18px; height:18px; display:inline-block;
-      filter: drop-shadow(0 0 10px rgba(0,229,255,.25));
+    @keyframes pulse{
+      0%,100%{ box-shadow: 0 0 0 6px rgba(89,243,255,.09); }
+      50%{ box-shadow: 0 0 0 10px rgba(89,243,255,.06); }
     }
 
-    .side{
-      display:flex; flex-direction:column; gap:12px;
+    .about{
+      color:var(--muted);
+      line-height:1.66;
+      font-size:14.6px;
+      margin:10px 0 14px;
     }
-    .stat{
-      display:flex; flex-direction:column; gap:8px;
-      padding:18px 18px;
-    }
-    .stat h3{margin:0; font-size:14px; color:var(--muted)}
-    .stat .big{font-size:20px; font-weight:800}
-    .stat .small{color:var(--muted2); font-size:13px; line-height:1.5}
+    .about .mono{ color:rgba(234,240,255,.78); }
 
-    section{margin-top:22px}
-    .sectionTitle{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      margin:24px 0 10px;
+    .stack{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
     }
-    .sectionTitle h2{margin:0; font-size:18px; letter-spacing:.02em}
-    .sectionTitle p{margin:0; color:var(--muted2); font-size:13px}
+    @media (max-width:560px){ .stack{ grid-template-columns:1fr; } }
 
-    .grid3{
-      display:grid; grid-template-columns: repeat(3, 1fr);
+    .tile{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.05);
+      border-radius:18px;
+      padding:14px;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .tile:hover{
+      transform: translateY(-2px);
+      background: rgba(255,255,255,.062);
+      border-color: rgba(255,255,255,.14);
+    }
+    .tile h3{ margin:0 0 8px; font-size:13px; }
+    .tile p{ margin:0; color:var(--muted2); font-size:12.6px; line-height:1.55; }
+
+    .tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+    .tag{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color: rgba(234,240,255,.80);
+      font-size:12px;
+      user-select:none;
+    }
+
+    /* sections */
+    .section{ padding:18px 0 0; }
+    .sectionHead{
+      display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
+      padding:12px 2px 10px;
+    }
+    .sectionHead h2{ margin:0; font-size:18px; letter-spacing:.2px; }
+    .sectionHead p{ margin:0; color:var(--muted2); font-size:12.9px; }
+
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
       gap:12px;
     }
-    @media (max-width: 900px){ .grid3{grid-template-columns:1fr} }
+    @media (max-width:980px){ .cards{ grid-template-columns:1fr; } }
 
     .mini{
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.03);
-      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      border-radius: 20px;
       padding:16px;
+      min-height: 120px;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
       position:relative;
       overflow:hidden;
     }
     .mini::after{
       content:"";
-      position:absolute; inset:0;
-      background: radial-gradient(400px 140px at 30% 0%, rgba(0,229,255,.12), transparent 60%);
-      opacity:.8; pointer-events:none;
+      position:absolute;
+      inset: -30% -20%;
+      background: radial-gradient(closest-side, rgba(89,243,255,.16), transparent 68%);
+      opacity:.0;
+      transform: translateY(10px);
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events:none;
     }
-    .mini > *{position:relative}
-    .mini h3{margin:0 0 6px; font-size:16px}
-    .mini p{margin:0; color:var(--muted); font-size:14px; line-height:1.55}
-    .tags{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
-    .tag{
-      font-size:12px;
-      color:var(--muted);
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.03);
+    .mini:hover{
+      transform: translateY(-2px);
+      background: rgba(255,255,255,.062);
+      border-color: rgba(255,255,255,.14);
+    }
+    .mini:hover::after{
+      opacity:.22;
+      transform: translateY(0px);
+    }
+    .mini h3{ margin:0 0 8px; font-size:14px; }
+    .mini p{ margin:0; color:var(--muted2); font-size:12.9px; line-height:1.58; }
+
+    .list{
+      margin:0; padding-left:16px;
+      color:var(--muted2);
+      font-size:13px;
+      line-height:1.66;
+    }
+    .list li{ margin:6px 0; }
+
+    /* projects */
+    .projects{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:12px;
+    }
+    @media (max-width:980px){ .projects{ grid-template-columns:1fr; } }
+    .project{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      border-radius: 20px;
+      padding:16px;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .project:hover{
+      transform: translateY(-2px);
+      background: rgba(255,255,255,.062);
+      border-color: rgba(255,255,255,.14);
+    }
+    .projectTop{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      margin-bottom:8px;
+    }
+    .project h3{ margin:0; font-size:14px; }
+    .badge{
       padding:6px 10px;
       border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color: rgba(234,240,255,.78);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .project p{ margin:0; color:var(--muted2); font-size:12.9px; line-height:1.58; }
+    .project .meta{ margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
+
+    /* quick proof block */
+    .proof{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width:980px){ .proof{ grid-template-columns:1fr; } }
+    .quote{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      border-radius: 20px;
+      padding:16px;
+      position:relative;
+      overflow:hidden;
+    }
+    .quote::before{
+      content:"“";
+      position:absolute;
+      top:-6px; left:12px;
+      font-size:56px;
+      color: rgba(234,240,255,.10);
+      font-family: var(--font);
+      line-height:1;
+    }
+    .quote p{ margin:0; color:var(--muted); line-height:1.62; font-size:13.6px; }
+    .quote .who{ margin-top:10px; color:var(--muted2); font-size:12.6px; }
+
+    /* footer */
+    footer{
+      padding:26px 0 40px;
+      color:var(--muted2);
+      font-size:12.6px;
+      text-align:center;
+    }
+    .sep{
+      height:1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+      margin:22px 0 0;
     }
 
-    .footer{
-      margin-top:34px;
-      padding-top:18px;
-      border-top:1px solid rgba(255,255,255,.10);
-      color:var(--muted2);
-      display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
-      flex-wrap:wrap;
+    /* small helpers */
+    .mono{ font-family: var(--mono); }
+    .muted{ color:var(--muted2); }
+
+    /* reveal animation */
+    .reveal{
+      opacity:0;
+      transform: translateY(12px);
+      transition: opacity .55s ease, transform .55s ease;
+      will-change: opacity, transform;
     }
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+    .reveal.show{
+      opacity:1;
+      transform: translateY(0);
+    }
+    .delay1{ transition-delay: .06s; }
+    .delay2{ transition-delay: .12s; }
+    .delay3{ transition-delay: .18s; }
+
+    /* reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      html{ scroll-behavior:auto; }
+      body::after, .logo::after, .chip .pulse{ animation:none !important; }
+      .reveal{ opacity:1 !important; transform:none !important; transition:none !important; }
+      .pill, .btn, .stat, .tile, .mini, .project{ transition:none !important; }
+    }
   </style>
 </head>
 
 <body>
-  <div class="grid"></div>
-
-  <div class="wrap">
-    <div class="nav">
+  <header class="top">
+    <div class="wrap topin">
       <div class="brand">
-        <span class="dot"></span>
-        <span>Yaroslav <span class="mono" style="color:var(--muted)">/ bots</span></span>
-      </div>
-      <div class="navlinks">
-        <a href="#skills">скиллы</a>
-        <a href="#projects">проекты</a>
-        <a href="#services">услуги</a>
-        <a href="#contact">контакт</a>
-      </div>
-    </div>
-
-    <div class="hero">
-      <div class="card">
-        <div class="inner">
-          <div class="kicker">
-            <span class="pill">🇺🇦 Украина</span>
-            <span class="pill">17 лет</span>
-            <span class="pill">Telethon + Bot API</span>
-          </div>
-
-          <h1 class="h1">Делаю Telegram-ботов<br/>и автоматизацию под задачу</h1>
-          <p class="lead">
-            Быстро собираю рабочие системы: мониторинг, уведомления, заявки, анти-дубли, агрегация.
-            Если нужно — бот “глаза + голос” (аккаунт читает, бот пишет).
-          </p>
-
-          <div class="btnrow">
-            <a class="btn primary" href="https://t.me/Moonsl1" target="_blank" rel="noopener">
-              <svg class="icon" viewBox="0 0 24 24" fill="none">
-                <path d="M21.8 4.6c.2-.8-.5-1.5-1.3-1.2L2.9 10.2c-1 .4-1 1.8 0 2.2l4.6 1.6 1.8 5.6c.3.9 1.4 1.1 2 .4l2.5-2.9 4.7 3.4c.8.6 1.9.1 2.1-.9l2.2-15z" stroke="white" stroke-opacity=".85" stroke-width="1.4"/>
-                <path d="M7.5 13.9 18.6 6.9" stroke="white" stroke-opacity=".65" stroke-width="1.4" stroke-linecap="round"/>
-              </svg>
-              Написать в Telegram
-            </a>
-
-            <a class="btn" href="#projects">
-              <svg class="icon" viewBox="0 0 24 24" fill="none">
-                <path d="M4 6h16M4 12h16M4 18h10" stroke="white" stroke-opacity=".75" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
-              Смотреть кейсы
-            </a>
-
-            <a class="btn" href="https://slavatop212-hub1.github.io/my-portfolio/" target="_blank" rel="noopener">
-              <svg class="icon" viewBox="0 0 24 24" fill="none">
-                <path d="M4 5h16v14H4z" stroke="white" stroke-opacity=".75" stroke-width="1.4"/>
-                <path d="M7 9h10M7 12h8M7 15h6" stroke="white" stroke-opacity=".6" stroke-width="1.4" stroke-linecap="round"/>
-              </svg>
-              Текущая версия
-            </a>
-          </div>
-
-          <div class="badges">
-            <span class="pill">⚡ мониторинг тревог/прилётов</span>
-            <span class="pill">🧠 фильтры + гео</span>
-            <span class="pill">🧼 анти-дубли</span>
-            <span class="pill">📦 агрегация сообщений</span>
-          </div>
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <b>Ярослав</b>
+          <small>Telegram-боты • Автоматизация • Мониторинг</small>
         </div>
       </div>
 
-      <div class="side">
-        <div class="card stat">
-          <h3>Фокус</h3>
-          <div class="big">Боты, которые экономят время</div>
-          <div class="small">Уведомления, заявки, мониторинг, автопостинг, сбор данных из каналов.</div>
-        </div>
-        <div class="card stat">
-          <h3>Фишка</h3>
-          <div class="big">“Глаза + голос”</div>
-          <div class="small">Аккаунт читает источники (Telethon), бот аккуратно публикует в чат (Bot API).</div>
-        </div>
-        <div class="card stat">
-          <h3>Контакт</h3>
-          <div class="big">@Moonsl1</div>
-          <div class="small">Отвечаю быстро. Можно голосом/текстом, как удобно.</div>
-        </div>
+      <nav class="nav" aria-label="Навигация">
+        <a class="pill" href="#about">Обо мне</a>
+        <a class="pill" href="#skills">Навыки</a>
+        <a class="pill" href="#what">Что делаю</a>
+        <a class="pill" href="#projects">Проекты</a>
+        <a class="pill" href="#work">Как работаю</a>
+        <a class="pill" href="#contact">Контакты</a>
+      </nav>
+
+      <div class="ctaRow">
+        <a class="btn primary" href="https://t.me/Moonsl1" target="_blank" rel="noopener">
+          <span class="dot" aria-hidden="true"></span>
+          Связаться в Telegram
+        </a>
       </div>
     </div>
+  </header>
 
-    <section id="skills">
-      <div class="sectionTitle">
-        <h2>Скиллы</h2>
-        <p>что реально умею и делаю руками</p>
+  <main class="wrap">
+    <section class="hero" id="top">
+      <div class="grid">
+        <!-- LEFT: HERO -->
+        <div class="card reveal">
+          <div class="pad">
+            <div class="kicker">
+              <span>Украина</span>
+              <span class="muted">•</span>
+              <code>@Moonsl1</code>
+              <span class="muted">•</span>
+              <span class="mono">без спама / без воды</span>
+            </div>
+
+            <h1 class="reveal delay1">Делаю ботов и системы, которые реально помогают.</h1>
+
+            <p class="lead reveal delay2">
+              Пишу Telegram-ботов под задачи бизнеса и команд: меню/кнопки, роли, админка, хранение данных,
+              логирование, антидубли, мониторинг источников, сводки и умные фильтры.
+              Люблю порядок в интерфейсе и понятную логику — чтобы работало стабильно, а не “вроде работает”.
+            </p>
+
+            <div class="ctaRow reveal delay3">
+              <a class="btn primary" href="https://t.me/Moonsl1" target="_blank" rel="noopener">💬 Написать мне</a>
+              <a class="btn" href="#projects">🧩 Посмотреть проекты</a>
+            </div>
+
+            <div class="stats reveal delay2">
+              <div class="stat">
+                <b>Быстро</b>
+                <span>Прототип за 1–2 дня, потом доводим до “боевого” состояния.</span>
+              </div>
+              <div class="stat">
+                <b>Умно</b>
+                <span>Фильтры, дедуп, агрегация, логика без хаоса — всё по полочкам.</span>
+              </div>
+              <div class="stat">
+                <b>Практично</b>
+                <span>Данные/логи/отчёты — чтобы не гадать “что случилось” и “почему”.</span>
+              </div>
+            </div>
+
+            <div class="tinyNote reveal">
+              <b>Нормальный подход:</b> сначала показываю работающий минимум, потом добавляем защиту от дублей/спама,
+              хранение, удобные команды и “полировку”.
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: ABOUT + SKILLS -->
+        <aside class="card reveal" id="about">
+          <div class="pad">
+            <div class="sideTitle">
+              <h2>Обо мне</h2>
+              <span class="chip"><span class="pulse" aria-hidden="true"></span>свободен под проекты</span>
+            </div>
+
+            <p class="about">
+              Меня зовут <b>Ярослав</b>, мне 17, я из Украины. Я делаю штуки, которые снимают рутину:
+              где-то это бот для заявок, где-то мониторинг каналов и чат-обсуждений, где-то — система со статистикой.
+              <br/><br/>
+              Я люблю, когда интерфейс выглядит аккуратно, а сообщения не превращают чат в мусор.
+              Поэтому всегда думаю про <span class="mono">антидубли</span>, <span class="mono">агрегацию</span> и формат.
+            </p>
+
+            <div class="stack" id="skills">
+              <div class="tile">
+                <h3>Telegram-боты (Python)</h3>
+                <p>Telethon / Bot API, кнопки, меню, роли, группы/каналы, обработка команд.</p>
+                <div class="tags">
+                  <span class="tag">Python</span>
+                  <span class="tag">Telethon</span>
+                  <span class="tag">Bot API</span>
+                </div>
+              </div>
+
+              <div class="tile">
+                <h3>Мониторинг и фильтры</h3>
+                <p>Ключевые слова, гео-фильтры, дедуп, агрегация, “умные” сводки без спама.</p>
+                <div class="tags">
+                  <span class="tag">Regex</span>
+                  <span class="tag">Dedup</span>
+                  <span class="tag">Aggregation</span>
+                </div>
+              </div>
+
+              <div class="tile">
+                <h3>Автоматизация</h3>
+                <p>События, уведомления, отчёты, регулярные задачи, интеграции (по ситуации).</p>
+                <div class="tags">
+                  <span class="tag">Asyncio</span>
+                  <span class="tag">Jobs</span>
+                  <span class="tag">Webhooks</span>
+                </div>
+              </div>
+
+              <div class="tile">
+                <h3>Хранение/логирование</h3>
+                <p>Статистика, логи, история, экспорт/отчёты — чтобы можно было проверять и улучшать.</p>
+                <div class="tags">
+                  <span class="tag">Storage</span>
+                  <span class="tag">Logs</span>
+                  <span class="tag">Reports</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="sep"></div>
+
+            <div class="tags" style="margin-top:14px">
+              <span class="tag">аккуратный интерфейс</span>
+              <span class="tag">чёткая логика</span>
+              <span class="tag">без спама</span>
+              <span class="tag">стабильность</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section reveal" id="what">
+      <div class="sectionHead">
+        <h2>Что я могу сделать</h2>
+        <p>Коротко: автоматизирую рутину и превращаю хаос в понятную схему.</p>
       </div>
 
-      <div class="grid3">
+      <div class="cards">
         <div class="mini">
-          <h3>Telegram парсинг</h3>
-          <p>Telethon: чтение каналов/чатов, фильтры по ключевым словам, гео-логика, сбор событий.</p>
-          <div class="tags">
-            <span class="tag">Telethon</span><span class="tag">filters</span><span class="tag">regex</span>
-          </div>
+          <h3>🤖 Боты под бизнес</h3>
+          <ul class="list">
+            <li>заявки / заказы / статусы</li>
+            <li>поддержка: FAQ + оператор</li>
+            <li>запись/бронь + напоминания</li>
+            <li>уведомления для команды</li>
+          </ul>
         </div>
 
         <div class="mini">
-          <h3>Доставка сообщений</h3>
-          <p>Bot API: постинг в группы, кнопки, команды, форматирование, аккуратные уведомления.</p>
-          <div class="tags">
-            <span class="tag">Bot API</span><span class="tag">Inline UI</span><span class="tag">commands</span>
-          </div>
+          <h3>📡 Мониторинг и оповещения</h3>
+          <ul class="list">
+            <li>мониторинг каналов/чатов</li>
+            <li>фильтры, дедуп, “умные” триггеры</li>
+            <li>сводки каждые N минут</li>
+            <li>поиск упоминаний в обсуждениях</li>
+          </ul>
         </div>
 
         <div class="mini">
-          <h3>Надёжность</h3>
-          <p>Анти-дубли, агрегация, лимиты/429, ретраи, стабильная логика, понятные логи.</p>
-          <div class="tags">
-            <span class="tag">anti-dup</span><span class="tag">retry</span><span class="tag">logging</span>
-          </div>
+          <h3>📊 Данные и админка</h3>
+          <ul class="list">
+            <li>пользователи / роли / права</li>
+            <li>статистика, логи, отчёты</li>
+            <li>контент-менеджмент</li>
+            <li>настройки “без кода”</li>
+          </ul>
         </div>
       </div>
     </section>
 
-    <section id="projects">
-      <div class="sectionTitle">
+    <section class="section reveal" id="projects">
+      <div class="sectionHead">
         <h2>Проекты</h2>
-        <p>кейсы, которые можно показать заказчику</p>
+        <p>Тут лучше потом добавить 1–2 скрина/видео (даёт доверие моментально).</p>
       </div>
 
-      <div class="grid3">
-        <div class="mini">
-          <h3>VIKING MONITORING</h3>
-          <p>Бот мониторинга тревог/ракет/прилётов: фильтры, гео (Кривой Рог), анти-дубли, агрегация, /spot.</p>
-          <div class="tags">
-            <span class="tag">Telethon + Bot</span><span class="tag">alerts</span><span class="tag">aggregation</span>
+      <div class="projects">
+        <div class="project">
+          <div class="projectTop">
+            <h3>🛡 VIKING MONITORING / мониторинг источников</h3>
+            <span class="badge">Мониторинг</span>
+          </div>
+          <p>
+            Сбор сообщений из Telegram-каналов/чатов, фильтрация по ключевым словам и гео, антидубли,
+            агрегация в сводки, поиск упоминаний локаций в обсуждениях.
+          </p>
+          <div class="meta">
+            <span class="tag">Telethon</span>
+            <span class="tag">Anti-spam</span>
+            <span class="tag">Dedup TTL</span>
+            <span class="tag">Сводки</span>
           </div>
         </div>
 
-        <div class="mini">
-          <h3>Бот заявок (шаблон)</h3>
-          <p>Приём заявок/заказов: анкета, статусы, уведомления админам, выгрузка в файл/таблицу.</p>
-          <div class="tags">
-            <span class="tag">forms</span><span class="tag">admin flow</span><span class="tag">export</span>
+        <div class="project">
+          <div class="projectTop">
+            <h3>⚙️ Боты под задачи</h3>
+            <span class="badge">Автоматизация</span>
           </div>
-        </div>
-
-        <div class="mini">
-          <h3>Автопостинг/агрегатор</h3>
-          <p>Сбор контента из источников → чистый пост в канал/группу. Меньше мусора — больше смысла.</p>
-          <div class="tags">
-            <span class="tag">parser</span><span class="tag">clean posts</span><span class="tag">schedule</span>
+          <p>
+            Делаю ботов “под ключ”: сценарии, кнопки, роли, хранение данных, уведомления, отчёты.
+            Упаковываю так, чтобы пользователю было просто (и чтобы бот не раздражал).
+          </p>
+          <div class="meta">
+            <span class="tag">UX</span>
+            <span class="tag">Roles</span>
+            <span class="tag">Logs</span>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="services">
-      <div class="sectionTitle">
-        <h2>Что могу сделать под ключ</h2>
-        <p>чётко и без воды</p>
+    <section class="section reveal" id="work">
+      <div class="sectionHead">
+        <h2>Как я работаю</h2>
+        <p>Без “магии”: всё прозрачно, по шагам.</p>
       </div>
 
-      <div class="grid3">
+      <div class="cards">
         <div class="mini">
-          <h3>Бот для бизнеса</h3>
-          <p>Заявки, записи, консультации, каталог, автоответы, кнопки — чтобы меньше ручной рутины.</p>
+          <h3>1) Быстрый прототип</h3>
+          <p>Сначала делаю минимально рабочую версию, чтобы ты увидел, что оно “живое”.</p>
         </div>
         <div class="mini">
-          <h3>Мониторинг/уведомления</h3>
-          <p>Сигналы по ключевым словам, анти-дубли, агрегация, доставка в нужный чат/канал.</p>
+          <h3>2) Доводка до продакшна</h3>
+          <p>Добавляю защиту от дублей/спама, хранение данных, админку, стабильность и нормальные логи.</p>
         </div>
         <div class="mini">
-          <h3>Парсер Telegram</h3>
-          <p>Сбор сообщений/постов из каналов и чатов, фильтрация, переупаковка, выгрузка.</p>
+          <h3>3) Поддержка / улучшения</h3>
+          <p>Фиксы, расширения, новые фичи. Можно вести проект “по подписке”, если нужно.</p>
         </div>
       </div>
     </section>
 
-    <section id="contact">
-      <div class="sectionTitle">
-        <h2>Связь</h2>
-        <p>пиши — быстро скажу цену и сроки</p>
+    <section class="section reveal" id="proof">
+      <div class="sectionHead">
+        <h2>Что важно для меня в проектах</h2>
+        <p>Это мелочь, но она отличает “нормальный бот” от “бота, который бесит”.</p>
+      </div>
+
+      <div class="proof">
+        <div class="quote">
+          <p>Я всегда стараюсь сделать так, чтобы бот писал по делу: меньше повторов, больше смысла. Если надо — свожу несколько сообщений в одно.</p>
+          <div class="who">— подход к уведомлениям и сводкам</div>
+        </div>
+        <div class="quote">
+          <p>Люблю, когда можно быстро понять, что происходит: логи, статистика, история. Тогда проект реально улучшается, а не “на удачу”.</p>
+          <div class="who">— про стабильность и поддержку</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="contact">
+      <div class="sectionHead">
+        <h2>Контакты</h2>
+        <p>Самый быстрый вариант — Telegram.</p>
       </div>
 
       <div class="card">
-        <div class="inner">
-          <p class="lead" style="margin:0 0 14px">
-            Хочешь бота? Напиши мне в Telegram и кинь 2 вещи: <b>что должно происходить</b> и <b>куда бот должен писать</b>.
-            Я отвечу планом и предложу простую архитектуру.
-          </p>
-
-          <div class="btnrow">
-            <a class="btn primary" href="https://t.me/Moonsl1" target="_blank" rel="noopener">
-              Написать: @Moonsl1
-            </a>
-            <a class="btn" href="#projects">Вернуться к кейсам</a>
+        <div class="pad">
+          <div class="ctaRow">
+            <a class="btn primary" href="https://t.me/Moonsl1" target="_blank" rel="noopener">🚀 Telegram: @Moonsl1</a>
+            <a class="btn" href="#top">⬆️ Наверх</a>
           </div>
+
+          <div class="sep"></div>
+
+          <p class="muted" style="margin:14px 0 0; line-height:1.7">
+            Напиши в TG, что тебе нужно: <span class="mono">“бот для заявок”</span> /
+            <span class="mono">“мониторинг каналов”</span> / <span class="mono">“бот с админкой”</span>.
+            Я отвечу и предложу вариант решения (и если можно — коротко скажу, что реально сделать быстро, а что лучше делать поэтапно).
+          </p>
         </div>
       </div>
-
-      <div class="footer">
-        <div>© <span id="y"></span> Yaroslav • <span class="mono">Telegram bots</span></div>
-        <div class="mono" style="color:var(--muted2)">last update: <span id="d"></span></div>
-      </div>
     </section>
-  </div>
+
+    <footer class="reveal">
+      <div class="sep"></div>
+      <div style="margin-top:14px">
+        <span id="y"></span> • Ярослав • GitHub Pages
+      </div>
+    </footer>
+  </main>
 
   <script>
-    const now = new Date();
-    document.getElementById('y').textContent = now.getFullYear();
-    document.getElementById('d').textContent = now.toISOString().slice(0,10);
+    // год в футере
+    document.getElementById("y").textContent = new Date().getFullYear();
+
+    // reveal on scroll (мягко, без “клоунады”)
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!prefersReduced) {
+      const els = document.querySelectorAll('.reveal');
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) e.target.classList.add('show');
+        }
+      }, { threshold: 0.12 });
+
+      els.forEach(el => io.observe(el));
+    } else {
+      document.querySelectorAll('.reveal').forEach(el => el.classList.add('show'));
+    }
+
+    // чуть “живого” параллакса для фона (очень мягко)
+    if (!prefersReduced) {
+      let raf = null;
+      window.addEventListener('mousemove', (ev) => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          const x = (ev.clientX / window.innerWidth - 0.5) * 2;
+          const y = (ev.clientY / window.innerHeight - 0.5) * 2;
+          document.body.style.backgroundPosition = `${x * 6}px ${y * 6}px`;
+          raf = null;
+        });
+      }, { passive: true });
+    }
   </script>
 </body>
 </html>
